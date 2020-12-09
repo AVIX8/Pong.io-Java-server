@@ -1,165 +1,123 @@
-// package pongPackage;
+package pongPackage;
 
-// public class World {
-// constructor(game){
-//     this.game = game;
-//     this.BALLS = [];
-//     this.PLAYERS = [];
-//     this.ballsN = 0;
-//     this.playersN = 0;
-//     this.r = 10;
-//     }
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
-//     setPlayers(players) {
-//     this.BALLS = [];
-//     this.PLAYERS = [];
-//     this.playersN = Object.keys(players).length;
-//     this.ballsN = Math.ceil(this.playersN/2);
-    
-    
-//     let d = Math.PI*2 / this.playersN
-//     this.paddleSize = 2*Math.sin(d/2)*this.r/3
-//     this.ballRadius = this.paddleSize/9;
-//     let a = 0
-//     for (let p of Object.values(players)) {
-//         p.setPaddle(this.paddleSize, a, d, this.r)
-//         this.PLAYERS.push(p);
-//         a+=d
-//     }
+public class World {
+    public Game game;
+    public ArrayList<Ball> BALLS = new ArrayList<>();
+    public ArrayList<Player> PLAYERS = new ArrayList<>();
+    public double r = 10;
+    public int ballsN = 0;
+    public int playersN = 0;
+    public double paddleSize = 0;
+    public double ballRadius = 0;
 
-//     for (let i = 0; i < this.ballsN; i++) {
-//         let ball = new Ball(0,0,this.ballRadius);
-//         ball.vel.x = random(0.1,0.2);
-//         ball.vel.y = random(0.1,0.2);
-//         this.BALLS.push(ball);
-//     }
-//     }
+    public World(Game game){
+        this.game = game;
+    }
 
-//     getInfo() {
-//     return {
-//         'paddleSize': this.paddleSize,
-//         'ballRadius': this.ballRadius,
-//         'players': this.PLAYERS,
-//         'balls': this.BALLS
-//     }
-//     }
-
-//     update() {
-//     let worldUpdate = {
-//         balls: [],
-//         players: [],
-//     };
-//     let scoreUpdate = [];
-//     this.BALLS.forEach((b, index) => {
-//         b.vel = b.vel.mult(1.001)
-//         for (let i = index + 1; i < this.BALLS.length; i++) {
-//         if (collDetBB(b, this.BALLS[i])) {
-//             collResBB(b, this.BALLS[i]);
-//             penResBB(b, this.BALLS[i]);
-            
-//         }
-//         }
-
-//         this.PLAYERS.forEach((p) => {
-//         if (collDetBW(b, p)) {
-//             collResBW(b, p);
-//             penResBW(b, p);
-//             b.owner = p;
-//             p.score += 1;
-//             scoreUpdate.push({ id: p.id, score: p.score })
-//         }
-//         });
-
-//         if (b.pos.mag() > this.r) {
-//         let angle = Math.atan2(b.pos.y, b.pos.x)
-//         if (angle<0) angle = Math.PI*2 + angle
-//         let index = angle / (Math.PI*2/this.playersN)
-//         let p = this.PLAYERS[Math.floor(index)]
-//         p.score -= 5
-//         scoreUpdate.push({ id: p.id, score: p.score })
-//         if (b.owner) {
-//             b.owner.score += 5;
-//             scoreUpdate.push({ id: b.owner.id, score: b.owner.score })
-//             b.owner = null;
-//         }
-//         b.pos = new Vector(0,0)
-//         b.vel = b.vel.mult(-0.7)
-//         }
+    public void setPlayers(HashMap<UUID, Player> players) {
+        BALLS.clear();
+        PLAYERS.clear();
+        playersN = players.size();
+        ballsN = (int)Math.ceil(playersN/2f) ;
         
-//         worldUpdate.balls.push(b.serialized())
-//         b.reposition();
-//     });
-    
-//     this.PLAYERS.forEach((p) => {
-//         p.move(this.r)
-//         worldUpdate.players.push(p.serialized())
-//     });
-//     return {worldUpdate, scoreUpdate};
-//     }
-// }
+        
+        double step = Math.PI*2 / playersN;
+        paddleSize = 2*Math.sin(step/2)*r/3;
+        ballRadius = paddleSize/9;
+        double angle = 0;
+        for (UUID playerID : players.keySet()) {
+            players.get(playerID).setPaddle(paddleSize, angle, step, r);
+            PLAYERS.add(players.get(playerID));
+            angle+=step;
+        }
+
+        for (int i = 0; i < ballsN; i++) {
+            Ball ball = new Ball(0,0,this.ballRadius);
+            ball.vel.x = Physics.random(0.1,0.2);
+            ball.vel.y = Physics.random(0.1,0.2);
+            this.BALLS.add(ball);
+        }
+    }
+
+    public HashMap<String, Object> getInfo() {
+        HashMap<String, Object> info = new HashMap<>();
+        info.put("paddleSize", paddleSize);
+        info.put("ballRadius", ballRadius);
+        info.put("players", PLAYERS);
+        info.put("balls", BALLS);
+        return info;
+    }
+
+    public HashMap<String, Object> getScoreObject(Player p) {
+        HashMap<String, Object> newScore = new HashMap<>();
+        newScore.put("id", p.id);
+        newScore.put("score", p.score);
+        return newScore;
+    }
+
+    public HashMap<String, Object> update() {
+        HashMap<String, ArrayList<SerializedPos>> worldUpdate = new HashMap<>();
+        worldUpdate.put("balls", new ArrayList<SerializedPos>());
+        worldUpdate.put("players", new ArrayList<SerializedPos>());
+
+        ArrayList<HashMap<String, Object>> scoreUpdate = new ArrayList<>();
+        
+        for (int bi = 0; bi < ballsN; bi++) {
+            BALLS.get(bi).vel = BALLS.get(bi).vel.mult(1.001);
+			for (int i = bi + 1; i < BALLS.size(); i++) {
+                if (Physics.collDetBB(BALLS.get(bi), BALLS.get(i))) {
+                    Physics.collResBB(BALLS.get(bi), BALLS.get(i));
+                    Physics.penResBB(BALLS.get(bi), BALLS.get(i));
+                }
+            }
 
 
-// function random(min, max) {
-//     return Math.random() * (max - min) + min;
-//   }
-  
-//   function closestPointBW(b, w) {
-//     let wallEndToBall = b.pos.subtr(w.end);
-//     if (Vector.scalar(w.unit(), wallEndToBall) > 0) {
-//       return w.end;
-//     }
-//     let ballToWallStart = w.start.subtr(b.pos);
-//     let closestDist = Vector.scalar(w.unit(), ballToWallStart);
-//     if (closestDist > 0) {
-//       return w.start;
-//     }
-//     let closestVect = w.unit().mult(closestDist);
-//     return w.start.subtr(closestVect);
-//   }
-  
-//   function collDetBB(b1, b2) {
-//     if (b1.r + b2.r >= b1.pos.subtr(b2.pos).mag()) {
-//       return true;
-//     }
-//     return false;
-//   }
-  
-//   function collDetBW(b, w) {
-//     let ballToClosest = closestPointBW(b, w).subtr(b.pos);
-//     if (ballToClosest.mag() < b.r) {
-//       return true;
-//     }
-//     return false;
-//   }
-  
-//   function penResBB(b1, b2) {
-//     let distVec = b1.pos.subtr(b2.pos);
-//     let penDepth = b1.r + b2.r - distVec.mag();
-//     let penRes = distVec.unit().mult(penDepth / 2);
-//     b1.pos = b1.pos.add(penRes);
-//     b2.pos = b2.pos.add(penRes.mult(-1));
-//   }
-  
-//   function penResBW(b, w) {
-//     let penVect = b.pos.subtr(closestPointBW(b, w));
-//     b.pos = b.pos.add(penVect.unit().mult(b.r - penVect.mag()));
-//   }
-  
-//   function collResBB(b1, b2) {
-//     let normal = b1.pos.subtr(b2.pos).unit();
-//     let relVel = b1.vel.subtr(b2.vel);
-//     let sepVel = Vector.scalar(relVel, normal);
-//     let newSepVel = -sepVel;
-//     let sepVelVec = normal.mult(newSepVel);
-  
-//     b1.vel = b1.vel.add(sepVelVec);
-//     b2.vel = b2.vel.add(sepVelVec.mult(-1));
-//   }
-  
-//   function collResBW(b, w) {
-//     let normal = b.pos.subtr(closestPointBW(b, w)).unit();
-//     let sepVel = Vector.scalar(b.vel, normal);
-//     let newSepVel = -sepVel;
-//     let vsepDiff = sepVel - newSepVel;
-//     b.vel = b.vel.add(normal.mult(-vsepDiff));
-//   }
+
+            for (int pi = 0; pi < playersN; pi++) {
+                if (Physics.collDetBW(BALLS.get(bi), PLAYERS.get(pi))) {
+                    Physics.collResBW(BALLS.get(bi), PLAYERS.get(pi));
+                    Physics.penResBW(BALLS.get(bi), PLAYERS.get(pi));
+                    BALLS.get(bi).owner = PLAYERS.get(pi);
+                    PLAYERS.get(pi).score += 1;
+                    scoreUpdate.add(getScoreObject(PLAYERS.get(pi)));
+                }
+            }
+
+            if (BALLS.get(bi).pos.mag() > this.r) {
+                double angle = Math.atan2(BALLS.get(bi).pos.y, BALLS.get(bi).pos.x);
+                if (angle<0) angle = Math.PI*2 + angle;
+                double index = angle / (Math.PI*2/this.playersN);
+                Player p = this.PLAYERS.get((int)Math.floor(index));
+                
+                p.score -= 5; //asdasdgfhjagkfwgif34hg78345yv834h5yu345hvy34mvy         МОЖЕТ РАБОТАТЬ НЕКОРРЕКТНО
+                scoreUpdate.add(getScoreObject(p));
+                
+                if (BALLS.get(bi).owner != null) {
+                    BALLS.get(bi).owner.score += 5;
+                    scoreUpdate.add(getScoreObject(BALLS.get(bi).owner));
+                    BALLS.get(bi).owner = null;
+                }
+                BALLS.get(bi).pos = new Vector(0,0);
+                BALLS.get(bi).vel = BALLS.get(bi).vel.mult(-0.7);
+            }
+            
+            worldUpdate.get("balls").add(BALLS.get(bi).serialized());
+            BALLS.get(bi).reposition();
+        }
+        
+        for (Player player : PLAYERS) {
+            player.move(r);
+            worldUpdate.get("players").add(player.serialized());
+        }
+
+        HashMap<String, Object> ret = new HashMap<>();
+        ret.put("worldUpdate", worldUpdate);
+        ret.put("scoreUpdate", scoreUpdate);
+        
+        return ret;
+    }
+}

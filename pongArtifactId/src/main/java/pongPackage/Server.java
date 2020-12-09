@@ -3,7 +3,6 @@ package pongPackage;
 import com.corundumstudio.socketio.listener.*;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 // import com.corundumstudio.socketio.protocol.JsonSupport;
@@ -12,9 +11,8 @@ import java.util.UUID;
 import com.corundumstudio.socketio.*;
 
 public class Server {
-    public static Map<UUID, Game> gameBySocketID = new HashMap<>();
-    public static Map<String, Game> gameByRoom = new HashMap<>();
-    // Map<UUID, Game> roomBySocketID = new HashMap<UUID, Game>();
+    public static HashMap<UUID, Game> gameBySocketID = new HashMap<>();
+    public static HashMap<String, Game> gameByRoom = new HashMap<>();
     public static void main(String[] args) throws InterruptedException {
 
         Configuration config = new Configuration();
@@ -54,13 +52,23 @@ public class Server {
             }
         });
 
-        server.addEventListener("setPlayerData", HashMap.class, new DataListener<HashMap>() {
+        server.addEventListener("setPlayerData", new HashMap<String, Object>().getClass(), new DataListener<HashMap<String, Object>>() {
             @Override
-            public void onData(SocketIOClient socket, HashMap data, AckRequest ackRequest) {
+            public void onData(SocketIOClient socket, HashMap<String, Object> data, AckRequest ackRequest) {
                 gameBySocketID.get(socket.getSessionId()).setPlayerData(socket, data);
-                System.out.println("setPlayerData " + data);
-                
-                
+            }
+        });
+
+        server.addEventListener("keydown", String.class, new DataListener<String>() {
+            @Override
+            public void onData(SocketIOClient socket, String key, AckRequest ackRequest) {
+                gameBySocketID.get(socket.getSessionId()).setPlayerControl(socket, key, true);
+            }
+        });
+        server.addEventListener("keyup", String.class, new DataListener<String>() {
+            @Override
+            public void onData(SocketIOClient socket, String key, AckRequest ackRequest) {
+                gameBySocketID.get(socket.getSessionId()).setPlayerControl(socket, key, false);
             }
         });
 
