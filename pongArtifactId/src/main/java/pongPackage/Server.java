@@ -4,20 +4,15 @@ import com.corundumstudio.socketio.listener.*;
 
 import java.util.HashMap;
 import java.util.UUID;
-
-// import com.corundumstudio.socketio.protocol.JsonSupport;
-// import com.google.gson.Gson;
-// import com.corundumstudio.socketio.protocol.JacksonJsonSupport;
 import com.corundumstudio.socketio.*;
 
 public class Server {
     public static HashMap<UUID, Game> gameBySocketID = new HashMap<>();
     public static HashMap<String, Game> gameByRoom = new HashMap<>();
+
     public void run() throws InterruptedException {
 
         Configuration config = new Configuration();
-        // config.setHostname("localhost");
-        // config.setJsonSupport(new JacksonJsonSupport());
         config.setPort(4000);
         final SocketIOServer server = new SocketIOServer(config);
 
@@ -48,16 +43,17 @@ public class Server {
                 }
                 gameBySocketID.put(socket.getSessionId(), gameByRoom.get(data));
                 gameBySocketID.get(socket.getSessionId()).addPlayer(socket);
-                
+
             }
         });
 
-        server.addEventListener("setPlayerData", new HashMap<String, Object>().getClass(), new DataListener<HashMap<String, Object>>() {
-            @Override
-            public void onData(SocketIOClient socket, HashMap<String, Object> data, AckRequest ackRequest) {
-                gameBySocketID.get(socket.getSessionId()).setPlayerData(socket, data);
-            }
-        });
+        server.addEventListener("setPlayerData", new HashMap<String, Object>().getClass(),
+                new DataListener<HashMap<String, Object>>() {
+                    @Override
+                    public void onData(SocketIOClient socket, HashMap<String, Object> data, AckRequest ackRequest) {
+                        gameBySocketID.get(socket.getSessionId()).setPlayerData(socket, data);
+                    }
+                });
 
         server.addEventListener("keydown", String.class, new DataListener<String>() {
             @Override
@@ -78,7 +74,6 @@ public class Server {
                 socket.sendEvent("pong_", data);
             }
         });
-
 
         server.start();
 

@@ -21,8 +21,10 @@ public class Player extends Wall {
   }
 
   public void setControl(String key, boolean pressed) {
-    if (key.equals("ArrowRight")) control.right = pressed;
-    if (key.equals("ArrowLeft")) control.left = pressed;
+    if (key.equals("ArrowRight"))
+      control.right = pressed;
+    if (key.equals("ArrowLeft"))
+      control.left = pressed;
   }
 
   public void setPaddle(double size, double a, double d, double r) {

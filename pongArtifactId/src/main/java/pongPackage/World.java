@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class World {
-    public Game game;
     public ArrayList<Ball> BALLS = new ArrayList<>();
     public ArrayList<Player> PLAYERS = new ArrayList<>();
     public double r = 10;
@@ -14,9 +13,7 @@ public class World {
     public double paddleSize = 0;
     public double ballRadius = 0;
 
-    public World(Game game){
-        this.game = game;
-    }
+    public World(){}
 
     public void setPlayers(HashMap<UUID, Player> players) {
         BALLS.clear();

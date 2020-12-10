@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.logging.Handler;
 import com.corundumstudio.socketio.SocketIOClient;
 
 public class Game {
@@ -14,11 +13,10 @@ public class Game {
   public HashMap<UUID, Player> players = new HashMap<>();
   public ArrayList<UUID> disconnected = new ArrayList<>();
   public World world;
-  Handler handler;
   public Timer timer;
 
   public Game() {
-    this.world = new World(this);
+    this.world = new World();
   }
 
   public void emitAllSockets(String event, Object data) {
@@ -57,7 +55,7 @@ public class Game {
     }
   }
 
-  public void setPlayerControl(SocketIOClient socket,  String key, boolean pressed) {
+  public void setPlayerControl(SocketIOClient socket, String key, boolean pressed) {
     if (players.containsKey(socket.getSessionId())) {
       players.get(socket.getSessionId()).setControl(key, pressed);
     }
