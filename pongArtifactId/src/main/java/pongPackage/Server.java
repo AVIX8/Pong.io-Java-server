@@ -13,7 +13,7 @@ import com.corundumstudio.socketio.*;
 public class Server {
     public static HashMap<UUID, Game> gameBySocketID = new HashMap<>();
     public static HashMap<String, Game> gameByRoom = new HashMap<>();
-    public static void main(String[] args) throws InterruptedException {
+    public void run() throws InterruptedException {
 
         Configuration config = new Configuration();
         // config.setHostname("localhost");

@@ -60,9 +60,9 @@ public class World {
     }
 
     public HashMap<String, Object> update() {
-        HashMap<String, ArrayList<SerializedPos>> worldUpdate = new HashMap<>();
-        worldUpdate.put("balls", new ArrayList<SerializedPos>());
-        worldUpdate.put("players", new ArrayList<SerializedPos>());
+        HashMap<String, ArrayList<Vector>> worldUpdate = new HashMap<>();
+        worldUpdate.put("balls", new ArrayList<Vector>());
+        worldUpdate.put("players", new ArrayList<Vector>());
 
         ArrayList<HashMap<String, Object>> scoreUpdate = new ArrayList<>();
         
@@ -93,7 +93,7 @@ public class World {
                 double index = angle / (Math.PI*2/this.playersN);
                 Player p = this.PLAYERS.get((int)Math.floor(index));
                 
-                p.score -= 5; //asdasdgfhjagkfwgif34hg78345yv834h5yu345hvy34mvy         МОЖЕТ РАБОТАТЬ НЕКОРРЕКТНО
+                p.score -= 5;
                 scoreUpdate.add(getScoreObject(p));
                 
                 if (BALLS.get(bi).owner != null) {
@@ -105,13 +105,13 @@ public class World {
                 BALLS.get(bi).vel = BALLS.get(bi).vel.mult(-0.7);
             }
             
-            worldUpdate.get("balls").add(BALLS.get(bi).serialized());
+            worldUpdate.get("balls").add(BALLS.get(bi).pos);
             BALLS.get(bi).reposition();
         }
         
         for (Player player : PLAYERS) {
             player.move(r);
-            worldUpdate.get("players").add(player.serialized());
+            worldUpdate.get("players").add(player.pos);
         }
 
         HashMap<String, Object> ret = new HashMap<>();

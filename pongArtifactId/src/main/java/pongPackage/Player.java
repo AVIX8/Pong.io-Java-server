@@ -72,8 +72,4 @@ public class Player extends Wall {
     serializedData.put("ready", ready);
     return serializedData;
   }
-
-  public SerializedPos serialized() {
-    return new SerializedPos(pos);
-  }
 }

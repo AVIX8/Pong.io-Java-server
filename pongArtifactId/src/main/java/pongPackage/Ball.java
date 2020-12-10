@@ -14,8 +14,4 @@ public class Ball {
     public void reposition() {
         this.pos = this.pos.add(this.vel);
     }
-
-    public SerializedPos serialized() {
-        return new SerializedPos(pos);
-    }
 }
