@@ -45,6 +45,7 @@ public class Game {
   }
 
   public void removePlayer(SocketIOClient socket) {
+    if (!players.containsKey(socket.getSessionId())) return;
     emitAllSockets("msg", String.format("%s отключился от игры.", players.get(socket.getSessionId()).name));
     if (running) {
       disconnected.add(socket.getSessionId());
