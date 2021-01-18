@@ -8,12 +8,12 @@ import com.corundumstudio.socketio.SocketIOClient;
 public class Player extends Wall {
   public String name = "Игрок";
   public String color = "#f00";
+  private double speed = 0.5;
   public boolean ready = false;
-  public double speed = 0.5;
   public int score = 0;
   public Vector unitFromCenter;
-  public Control control = new Control();
   public UUID id;
+  private Control control = new Control();
 
   public Player(SocketIOClient socket) {
     super(0, 0, 0, 0);

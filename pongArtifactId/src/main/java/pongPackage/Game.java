@@ -8,24 +8,24 @@ import java.util.UUID;
 import com.corundumstudio.socketio.SocketIOClient;
 
 public class Game {
-  public boolean running = false;
-  public HashMap<UUID, SocketIOClient> sockets = new HashMap<>();
-  public HashMap<UUID, Player> players = new HashMap<>();
-  public ArrayList<UUID> disconnected = new ArrayList<>();
-  public World world;
-  public Timer timer;
+  private boolean running = false;
+  private HashMap<UUID, SocketIOClient> sockets = new HashMap<>();
+  private HashMap<UUID, Player> players = new HashMap<>();
+  private ArrayList<UUID> disconnected = new ArrayList<>();
+  private World world;
+  private Timer timer;
 
   public Game() {
     this.world = new World();
   }
 
-  public void emitAllSockets(String event, Object data) {
+  private void emitAllSockets(String event, Object data) {
     for (UUID socketID : sockets.keySet()) {
       sockets.get(socketID).sendEvent(event, data);
     }
   }
 
-  public void lobbyUpdate() {
+  private void lobbyUpdate() {
     ArrayList<HashMap<String, Object>> serializedData = new ArrayList<>();
     for (UUID playerID : players.keySet()) {
       serializedData.add(players.get(playerID).serializeForLobbyUpdate());
@@ -81,7 +81,7 @@ public class Game {
     }
   }
 
-  public void tick() {
+  private void tick() {
     HashMap<String, Object> data = this.world.update();
     this.emitAllSockets("worldUpdate", data.get("worldUpdate"));
     this.emitAllSockets("scoreUpdate", data.get("scoreUpdate"));
@@ -93,7 +93,7 @@ public class Game {
     }
   }
 
-  public void start() {
+  private void start() {
     running = true;
     for (UUID playerID : players.keySet()) {
       players.get(playerID).score = 0;
@@ -114,7 +114,7 @@ public class Game {
     timer.scheduleAtFixedRate(task, 5000l, 17l);
   }
 
-  public void finish(Player winner) {
+  private void finish(Player winner) {
     this.running = false;
     for (UUID id : disconnected) {
       sockets.remove(id);

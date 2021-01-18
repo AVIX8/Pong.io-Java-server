@@ -7,8 +7,8 @@ import java.util.UUID;
 import com.corundumstudio.socketio.*;
 
 public class Server {
-    public static HashMap<UUID, Game> gameBySocketID = new HashMap<>();
-    public static HashMap<String, Game> gameByRoom = new HashMap<>();
+    private static HashMap<UUID, Game> gameBySocketID = new HashMap<>();
+    private static HashMap<String, Game> gameByRoom = new HashMap<>();
 
     public void run() throws InterruptedException {
 

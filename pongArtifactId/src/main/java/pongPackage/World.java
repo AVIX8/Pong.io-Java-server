@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class World {
-    public ArrayList<Ball> BALLS = new ArrayList<>();
-    public ArrayList<Player> PLAYERS = new ArrayList<>();
-    public double r = 10;
-    public int ballsN = 0;
-    public int playersN = 0;
-    public double paddleSize = 0;
-    public double ballRadius = 0;
+    private ArrayList<Ball> BALLS = new ArrayList<>();
+    private ArrayList<Player> PLAYERS = new ArrayList<>();
+    private double r = 10;
+    private int ballsN = 0;
+    private int playersN = 0;
+    private double paddleSize = 0;
+    private double ballRadius = 0;
 
     public World(){}
 
@@ -33,10 +33,10 @@ public class World {
         }
 
         for (int i = 0; i < ballsN; i++) {
-            Ball ball = new Ball(0,0,this.ballRadius);
+            Ball ball = new Ball(0,0,ballRadius);
             ball.vel.x = Physics.random(0.1,0.2);
             ball.vel.y = Physics.random(0.1,0.2);
-            this.BALLS.add(ball);
+            BALLS.add(ball);
         }
     }
 
@@ -49,7 +49,7 @@ public class World {
         return info;
     }
 
-    public HashMap<String, Object> getScoreObject(Player p) {
+    private HashMap<String, Object> getScoreObject(Player p) {
         HashMap<String, Object> newScore = new HashMap<>();
         newScore.put("id", p.id);
         newScore.put("score", p.score);
@@ -84,11 +84,11 @@ public class World {
                 }
             }
 
-            if (BALLS.get(bi).pos.mag() > this.r) {
+            if (BALLS.get(bi).pos.mag() > r) {
                 double angle = Math.atan2(BALLS.get(bi).pos.y, BALLS.get(bi).pos.x);
                 if (angle<0) angle = Math.PI*2 + angle;
-                double index = angle / (Math.PI*2/this.playersN);
-                Player p = this.PLAYERS.get((int)Math.floor(index));
+                double index = angle / (Math.PI*2/playersN);
+                Player p = PLAYERS.get((int)Math.floor(index));
                 
                 p.score -= 5;
                 scoreUpdate.add(getScoreObject(p));
