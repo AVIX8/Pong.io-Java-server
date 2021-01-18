@@ -103,7 +103,7 @@ public class Game {
     this.world.setPlayers(this.players);
     this.emitAllSockets("gameStart", this.world.getInfo());
 
-    timer = new Timer(true);
+    timer = new Timer();
     TimerTask task = new TimerTask() {
       @Override
       public void run() {
